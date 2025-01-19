@@ -1,11 +1,13 @@
 const Recipes=require("../models/recipe")
 
-const getRecipes = (req,res)=>{
-    res.json({message:"hello"})
+const getRecipes =async (req,res)=>{
+    const recipes=await Recipes.find()
+    return res.json(recipes)
 }
 
-const getRecipe = (req,res)=>{
-    res.json({message:"hello"})
+const getRecipe = async(req,res)=>{
+    const recipes=await Recipes.findById(req.params.id)
+    res.json(recipes)
 }
 const addRecipe =async (req,res)=>{
     const {title, ingredients, instructions, time}=req.body
@@ -18,8 +20,17 @@ const addRecipe =async (req,res)=>{
     })
     return res.json(newRecipe)
 }
-const editRecipe = (req,res)=>{
-    res.json({message:"hello"})
+const editRecipe = async(req,res)=>{
+    const {title, ingredients, instructions, time}=req.body
+    let recipe=await Recipes.findById(res.params.id)
+    try {
+        if(recipe){
+            await Recipes.findByIdAndUpdate(req.params.id,req.body,{new:true})
+            res.json({title, ingredients, instructions, time})
+        }
+    } catch (error) {
+        return res.status(404).json({message:"error"})
+    }
 }
 const deleteRecipe = (req,res)=>{
     res.json({message:"hello"})
